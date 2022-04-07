@@ -22,3 +22,16 @@ app.get('/api/hello', function(req, res) {
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);
 });
+
+jsonObject={};
+app.post("/api/shorturl", (req, res, next)=>{
+  jsonObject["orinal_url"] = 'https://freeCodeCamp.org';
+  jsonObject["short_url"] = 1
+res.json(jsonObject)
+} )
+/*app.get("/api/shorturl/:num", (req, res, next)=>{
+  let num = req.params.num;
+  jsonObject["orinal_url"] = 'https://freeCodeCamp.org';
+  jsonObject["short_url"] = 1
+res.json(jsonObject)
+} )*/
