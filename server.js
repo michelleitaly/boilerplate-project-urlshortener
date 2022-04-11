@@ -7,6 +7,7 @@ const app = express();
 
 // Basic Configuration
 const port = process.env.PORT || 3000;
+//console.log(process.env.PORT)---undefined;
 
 app.use(cors());
 
@@ -20,7 +21,8 @@ let bodyParser = require("body-parser");
 
 
 app.use('/public', express.static(`${process.cwd()}/public`));
-
+//console.log("cwd()", process.cwd())
+//console.log("__dirname", _dirname)
 app.get('/', function(req, res) {
   res.sendFile(process.cwd() + '/views/index.html');
 });
@@ -36,10 +38,14 @@ app.listen(port, function() {
 
 jsonObject={};
 app.post("/api/shorturl", bodyParser.urlencoded({ extended: false}), (req, res, next)=>{
- console.log(req.body.url)
- 
-  /* jsonObject["original_url"] = req.body.url;
-  jsonObject["short_url"] = 1*/
+  
+  jsonObject["original_url"] = req.body.url;
+  let short = 1;
+  
+  console.log(Url.findOne({}))
+     // .sort(short: "desc")
+  jsonObject["short_url"] = short;
+ // console.log(req.body)
 res.json(jsonObject)
 } )
 /*app.get("/api/shorturl/:num", (req, res, next)=>{
