@@ -80,7 +80,7 @@ app.post("/api/shorturl", bodyParser.urlencoded({ extended: false }), (req, res,
         })
       }
     })
-  jsonObject["short_url"] = inputShort;
+ 
   // console.log(req.body)
   res.json(jsonObject)
 })
