@@ -12,19 +12,19 @@ const port = process.env.PORT || 3000;
 //TEST MONGODB CONNECTION---
 const db = process.env.SECRET_KEY
 mongoose
-    .connect(db, { 
-        useNewUrlParser: true,
-        useCreateIndex: true
-      })
-    .then(() => console.log('MongoDB connected...'))
-    .catch(err => console.log(err));
+  .connect(db, {
+    useNewUrlParser: true,
+    useCreateIndex: true
+  })
+  .then(() => console.log('MongoDB connected...'))
+  .catch(err => console.log(err));
 //---TEST MONGODB CONNECTION
 
 app.use(cors());
 
 let urlSchema = new mongoose.Schema({
-  original: { type: String, required: true },
-  short: Number
+  original_url: { type: String, required: true },
+  short_url: Number
 })
 let Url = mongoose.model("url", urlSchema);
 let bodyParser = require("body-parser");
@@ -60,27 +60,45 @@ app.listen(port, function () {
 });
 
 jsonObject = {};
-app.post("/api/shorturl", bodyParser.urlencoded({ extended: false }), (req, res, next) => {
+app.post("/api/shorturl", bodyParser.urlencoded({ extended: false }), (req, res) => {
 
+  let dataFound = {};
+  Url.findOne({ original_url: req.body.url }, (error, data) => {
+    if (error) {
+      console.log(error)
+    } else if (data === null) {
+      console.log("Data does not exist")
+    } else {
+      console.log("dataFound", data)
+      dataFound = data
+    }
+  })
   jsonObject["original_url"] = req.body.url;
   let inputShort = 1;
   //find the bigest short_url number in database, if its  1/0? let new short_url =1, else short_url=shorturl++; if(!error)res.json(jsonObject),else 
   Url.findOne({})
-    .sort({ short: "desc" })
+    .sort({ short_url: "desc" })
     .exec((error, result) => {
-      if (!error && result != undefined) {
-        inputShort = result.short + 1;
+      if (!error && result !== null) {
+        console.log("short + 1")
+        inputShort = result.short_url + 1;
       };
-      if (!error) {
-        Url.findOneAndUpdate({ original: req.body.url }, { original: req.body.url, short: inputShort }, { new: true, upsert: true }, (error, savedUrl) => {
+      if (!error && dataFound !== undefined) {
+        console.log("dataFound exist and going to print it")
+        res.json({
+          original_url: dataFound.original_url, short_url: dataFound.short_url
+        })
+      } else if (!error) {
+        Url.findOneAndUpdate({ original_url: req.body.url }, { original_url: req.body.url, short_url: inputShort }, { new: true, upsert: true }, (error, savedUrl) => {
+          console.log("I am going to creat a new url")
           if (!error) {
-            jsonObject["short_url"] = savedUrl.short;
+            jsonObject["short_url"] = savedUrl.short_url;
             res.json(jsonObject)
           }
         })
       }
     })
- 
+
   // console.log(req.body)
   res.json(jsonObject)
 })
